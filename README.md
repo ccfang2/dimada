@@ -61,7 +61,7 @@ The summary is as follows.
           Sieve 
 ======================================== 
 Basis function: B-Splines
-Number of basis in each term: 11
+Number of basis for each variable: 11
 Maximum number of interactions in each term: 1
 Time used: 0.1985888 secs
  
