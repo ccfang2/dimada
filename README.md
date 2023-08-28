@@ -63,7 +63,7 @@ The summary is as follows.
 Basis function: B-Splines
 Number of basis for each original variable: 11
 Maximum number of interactions in each term: 1
-Time used: 0.1985888 secs
+Time used: 0.2779632 secs
  
 ======================================== 
           LASSO
@@ -72,7 +72,7 @@ Selection rule of lambda: Value of lambda that gives minimum MSE
 Selected lambda: 1.10e-01
 Number of selected terms: 16
 Cross-validated Empirical MSE: 1.29e+00
-Time used: 0.09663105 secs
+Time used: 1.216036 secs
  
 Coefficients: 
 | c.bs1    -4.07724| 
@@ -96,25 +96,26 @@ Coefficients:
           Post LASSO
 ======================================== 
 Method: OLS on selected terms
-In-sample MSE: 7.89e-01
+In-sample MSE: 7.85e-01
  
 Coefficients: 
-|` c.bs1`   -4.88735| 
-|` b.bs3`   -0.63130| 
-|` c.bs3`   -1.17499| 
-|` b.bs6`    0.59610| 
-|` a.bs7`    0.80117| 
-|` c.bs7`    0.45464| 
-|` a.bs8`    0.24469| 
-|` b.bs8`    1.21632| 
-|` c.bs8`    1.35030| 
-|` a.bs9`    0.73046| 
-|` b.bs9`    0.46952| 
-|` c.bs9`    0.30983| 
-|` b.bs10`   0.54059| 
-|` c.bs10`   0.88100| 
-|` b.bs11`   1.21519| 
-|` c.bs11`   1.09333| 
+|(Intercept)  -0.17972| 
+|` c.bs1`     -4.74913| 
+|` b.bs3`     -0.45928| 
+|` c.bs3`     -1.02934| 
+|` b.bs6`      0.74405| 
+|` a.bs7`      0.87448| 
+|` c.bs7`      0.57142| 
+|` a.bs8`      0.23965| 
+|` b.bs8`      1.35717| 
+|` c.bs8`      1.40354| 
+|` a.bs9`      0.81540| 
+|` b.bs9`      0.54066| 
+|` c.bs9`      0.41629| 
+|` b.bs10`     0.62925| 
+|` c.bs10`     0.96740| 
+|` b.bs11`     1.31007| 
+|` c.bs11`     1.15840| 
 
 ======================================== 
           Adaptive LASSO
@@ -123,7 +124,7 @@ Selection rule of lambda: Value of lambda that gives minimum MSE
 Selected lambda: 5.72e-02
 Number of selected terms: 13
 Cross-validated Empirical MSE: 1.11e+00
-Time used: 0.1827052 secs
+Time used: 1.439426 secs
  
 Coefficients: 
 | c.bs1    -4.74401| 
@@ -144,25 +145,26 @@ Coefficients:
           Post Adaptive LASSO
 ======================================== 
 Method: OLS on selected terms
-In-sample MSE: 8.00e-01
+In-sample MSE: 7.99e-01
  
 Coefficients: 
-|` c.bs1`   -4.84827| 
-|` b.bs3`   -0.65782| 
-|` c.bs3`   -1.11847| 
-|` b.bs6`    0.56979| 
-|` a.bs7`    0.98068| 
-|` c.bs7`    0.39078| 
-|` b.bs8`    1.13406| 
-|` c.bs8`    1.58160| 
-|` a.bs9`    0.86345| 
-|` b.bs9`    0.69905| 
-|` c.bs10`   1.14021| 
-|` b.bs11`   1.41717| 
-|` c.bs11`   1.03604| 
+|(Intercept)  -0.077487| 
+|` c.bs1`     -4.787488| 
+|` b.bs3`     -0.584480| 
+|` c.bs3`     -1.054414| 
+|` b.bs6`      0.629745| 
+|` a.bs7`      1.023173| 
+|` c.bs7`      0.430128| 
+|` b.bs8`      1.196595| 
+|` c.bs8`      1.631726| 
+|` a.bs9`      0.903138| 
+|` b.bs9`      0.745756| 
+|` c.bs10`     1.208429| 
+|` b.bs11`     1.473172| 
+|` c.bs11`     1.050083| 
 ```
 
-As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.29 and 1.11. However, this MSE includes the regularization term which is always non-negative. To remove such an impact, post-Lasso and post-adaptive Lasso are performed, and MSEs for both these post-selection methods are 0.789 and 0.8. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller approximation error than parametric OLS estimator, less than 2/3 of it.
+As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.29 and 1.11. However, this MSE includes the regularization term which is always non-negative. To remove such an impact, post-Lasso and post-adaptive Lasso are performed, and MSEs for both these post-selection methods are 0.785 and 0.799. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller approximation error than parametric OLS estimator, less than 2/3 of it.
 
 ## Other Commands
 
