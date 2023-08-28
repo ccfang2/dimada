@@ -185,7 +185,7 @@ dimada <- function(y,
   lasso.final.coefs.index <- lasso.final.coefs!=0
 
   # post lasso with ols
-  post.lasso <- stats::lm(response ~ .-1, data=cbind(response=response, terms.values[,colnames(terms.values)[lasso.final.coefs.index],drop=FALSE]))
+  post.lasso <- stats::lm(response ~ ., data=cbind(response=response, terms.values[,colnames(terms.values)[lasso.final.coefs.index],drop=FALSE]))
 
   # --------------------------------
   # Adaptive LASSO
@@ -209,7 +209,7 @@ dimada <- function(y,
     adaLasso.final.coefs.index <- adaLasso.final.coefs!=0
 
     # post adaptive lasso
-    post.adaLasso <- stats::lm(response ~ .-1, data=cbind(response=response, adaLasso.terms.values[,colnames(adaLasso.terms.values)[adaLasso.final.coefs.index],drop=FALSE]))
+    post.adaLasso <- stats::lm(response ~ ., data=cbind(response=response, adaLasso.terms.values[,colnames(adaLasso.terms.values)[adaLasso.final.coefs.index],drop=FALSE]))
 
     # --------------------------------
     # Twin Adaptive LASSO
@@ -248,7 +248,7 @@ dimada <- function(y,
         taLasso.final.coefs.index <- taLasso.final.coefs!=0
 
         # post twin adaptive lasso
-        post.taLasso <- stats::lm(response ~ .-1, data=cbind(response=response, taLasso.terms.values[,colnames(taLasso.terms.values)[taLasso.final.coefs.index],drop=FALSE]))
+        post.taLasso <- stats::lm(response ~ ., data=cbind(response=response, taLasso.terms.values[,colnames(taLasso.terms.values)[taLasso.final.coefs.index],drop=FALSE]))
 
       }
     }
