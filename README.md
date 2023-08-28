@@ -1,5 +1,4 @@
-# dimada
-Dimension Adaptive Estimation <img src="man/figures/badge.png" align="right" alt="" width="155" />
+# dimada <img src="man/figures/badge.png" align="right" alt="" width="155" />
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://makeapullrequest.com)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ccfang2/dimada?logo=GitHub)
@@ -20,7 +19,7 @@ devtools::install_github("ccfang2/dimada")
 
 ## Key Commands
 
-The main command in this package is `dimada()`. Users are required to import response variable and a dataset of original independent variables. To construct sieves, users can choose from a variety of basis functions including power series, Legendre polynomials, B-splines and trigonometric polynomials, etc. Since a multivariate setup is considered, users also need to define the maximum number of interacting variables in a single term of sieves. If users already have the dataset of sieves, they could directly import the sieves instead of the original variables in the command. 
+The main command in this package is `dimada()`. Users are required to import response variable and a dataset of original independent variables. To construct sieves, users can choose from a variety of basis functions including power series, Legendre polynomials, B-splines and trigonometric polynomials, etc. Since a multivariate setup is considered, users also need to define the maximum number of interacting variables in a single term of sieves. If users already have the dataset of sieves, they could directly import the sieves instead of the original variables in this command. 
 
 In terms of Lasso-type methods, users can choose from Lasso, [adaptive Lasso](https://www.tandfonline.com/doi/abs/10.1198/016214506000000735) and [twin adaptive Lasso](https://www.sciencedirect.com/science/article/abs/pii/S030440762100049X). Lasso is the basedline method, so it has to be included in the argument of `methods` in `dimada()`. An example of this command is given below.
 
@@ -47,6 +46,7 @@ To quickly plot out the main results of `dimada()`, one can use `dimada.plot()`.
 
 The plot is as follows.
 
+<img src="man/figures/dimada.plot.png" alt="Plot" width="600"/>    
 
 In particular, post-selection OLS model is performed after each Lasso-type method because the approximation error in Lasso-type methods also includes a regularization term which is always non-negative. Thus, it would be better to run a post-selection model without a regularization term so that the estimation result can be directly compared with other estimators. The results of Lasso-type methods and the post-selection OLS models can be quickly printed out with the command `dimada.summary()`.
 
@@ -162,11 +162,11 @@ Coefficients:
 |` c.bs11`   1.03604| 
 ```
 
-As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.29 and 1.11. However, this MSE includes the regularization term which are always non-negative. To remove such an impact, post-Lasso and post-adaptive Lasso is performed, and MSEs for both post-selection methods are 0.789 and 0.8. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller approximation error than parametric OLS estimator, less than 2/3 of that.
+As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.29 and 1.11. However, this MSE includes the regularization term which is always non-negative. To remove such an impact, post-Lasso and post-adaptive Lasso are performed, and MSEs for both these post-selection methods are 0.789 and 0.8. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller approximation error than parametric OLS estimator, less than 2/3 of it.
 
 ## Other Commands
 
-In this package, there are also a series of functions that generate multivariate sieves from original dataset. Particularly, they consider the interaction of variables in the construction of sieves. These functions are suffixed with `.gen`, and the data frame in the output of these functions can be used as input of the argument `x.sieve` in command `dimada()`. Following is an example of generating sieves with power series by using `poly.gen()`.
+In this package, there are also a series of functions that help to generate multivariate sieves from original dataset. Particularly, they consider the interactions among variables in the construction of sieves. These functions are suffixed with `.gen`, and the data frame in the output of these functions can be used as input of the argument `x.sieve` in command `dimada()`. Following is an example of generating sieves with power series by using `poly.gen()`.
 
 ```r
 # a data frame with 3 variables and 100 observations
@@ -180,7 +180,7 @@ It is worthy of mentioning that users could also compute sieves for a test datas
 
 ## Note
 - This package is a part of my [thesis](https://github.com/ccfang2/Masters_Thesis), which is supervised by Prof. Dr. Joachim Freyberger. The idea of constructing such a dimension adaptive estimator is from him. This is an ongoing project, and future improvement on this package is expected.
-- The picture on the hexagon badge of this package is drawn with the AI image creator of Dall·E, Microsoft.
+- The picture on the hexagon badge of this package is drawn with an [AI image creator](https://openai.com/dall-e-2) of Dall·E, OpenAI.
 
 ## Contact
 
