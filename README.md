@@ -46,7 +46,7 @@ To quickly plot out the main results of `dimada()`, one can use `dimada.plot()`.
 
 The plot is as follows.
 
-<img src="man/figures/dimada.plot.png" alt="Plot" width="600"/>    
+<img src="man/figures/plot.png" alt="Plot" width="600"/>    
 
 In particular, post-selection OLS model is performed after each Lasso-type method because the approximation error in Lasso-type methods also includes a regularization term which is always non-negative. Thus, it would be better to run a post-selection model without a regularization term so that the estimation result can be directly compared with other estimators. The results of Lasso-type methods and the post-selection OLS models can be quickly printed out with the command `dimada.summary()`.
 
@@ -61,7 +61,7 @@ The summary is as follows.
           Sieve 
 ======================================== 
 Basis function: B-Splines
-Maximum order of each term: 11
+Number of basis in each term: 11
 Maximum number of interactions in each term: 1
 Time used: 0.1985888 secs
  
