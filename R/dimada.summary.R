@@ -99,7 +99,7 @@ dimada.summary <- function(object,
              "======================================== \n",
              base::ifelse(is.na(basis), "Sieve is directly given by the user, so the following is unknown.\n",""),
              "Basis function: ", basis,"\n",
-             ifelse(attr(object, "basis") %in% c("haar", "daubechies"),"Number of levels in each term: ", "Number of basis in each term: "), attr(object, "n.basis"),"\n",
+             ifelse(attr(object, "basis") %in% c("haar", "daubechies"),"Number of levels for each original variable: ", "Number of basis for each original variable: "), attr(object, "n.basis"),"\n",
              "Maximum number of interactions in each term: ", attr(object, "max.interaction"),"\n",
              "Time used: ", attr(object, "sieve.time"), "\n \n")
 
