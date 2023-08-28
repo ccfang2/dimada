@@ -1,0 +1,24 @@
+Package: dimada
+Title: Dimension Adaptive Estimation
+Version: 1.0.0
+Authors@R: 
+    person("Chencheng", "Fang", , "ccfang@uni-bonn.de", role = c("aut", "cre"))
+Maintainer: Chencheng Fang <ccfang@uni-bonn.de>
+Description: Implements dimension adaptive estimation, which uses Sieves and Lasso-type methods to obtain an estimator with the property of adapting its convergence rate to the unknown dimension of underlying true model. Specifically, if the underlying model is parametric, this estimator converges as fast as a parametric estimator. If the underlying model is non-parametric, its convergence rate might be slower but it still converges whilst the usual parametric estimator does not converge at all. Hence, dimension adaptive estimator is weakly dominant in terms of approximation errors across different underlying models. The package 'dimada' allows users to easily perform such an estimator, together with other functions of plotting or summarizing the estimation results.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.1
+Depends: 
+    R (>= 2.10)
+Imports: 
+    dplyr,
+    FNN,
+    ggplot2,
+    ggthemes,
+    glmnet,
+    magrittr,
+    plde,
+    plyr,
+    splines,
+    wavethresh
