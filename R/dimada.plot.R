@@ -72,7 +72,7 @@ dimada.plot <- function(object,
     ggplot2::labs(title="Cross-Validated Empirical MSE", subtitle = paste("Basis Functions: ",basis,sep=""))+
     ggplot2::xlab(xlabel)+
     ggplot2::ylab("MSE")+
-    ggplot2::labs(caption=paste("The cross indicates the point selected by rule '", attr(object, "s"),"'.", sep=""))+
+    ggplot2::labs(caption=paste("The red star indicates the point selected by rule '", attr(object, "s"),"'.", sep=""))+
     ggplot2::facet_wrap(facets=ggplot2::vars(method), ncol=1,scales="free")+
     ggthemes::theme_base()
 
