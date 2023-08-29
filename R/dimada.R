@@ -26,11 +26,12 @@
 #' @param lambda.min.ratio a ratio that specifies the smallest value for \code{lambda} (i.e., penalty parameter in Lasso-type methods) as a fraction of maximal \code{lambda}.
 #' @param s a character string that specifies the selection criterion of \code{lambda} in Lasso-type regularization. Available \code{"s"} includes \code{"lambda.min"} and \code{"lambda.1se"}. The former chooses the \code{lambda} that minimizes the cross-validated (i.e., out-of-sample) approximation error,
 #' while the latter selects the largest value of \code{lambda} such that the cross-validated approximation error is within 1 standard error of the minimum. Default is \code{"lambda.min"}.
+#' @param save.sieve a logical value that indicates if a user hopes to save the data frame of sieves in the output. Default is \code{FALSE}.
 #' @param seed an integer that controls the randomness of cross validation. With all other arguments remain unchanged, the same seed will lead to the same output. \code{seed=NULL} implies no control over the randomness.
 #'
 #' @return The \code{dimada} command gives out an object of S3 class \code{"dimada"}, which is a list of results from all methods defined in the argument \code{methods} above. The result generally consists of the following items.
 #' \itemize{
-#'   \item \code{sieve}: a data frame containing the response variable and the sieves that are either generated from \code{x} or directly given by \code{x.sieve}.
+#'   \item \code{sieve}: a data frame containing the response variable and the sieves that are either generated from \code{x} or directly given by \code{x.sieve}. If the argument \code{save.sieve} is \code{FALSE}, then the data frame of sieves will not be included in the output.
 #'   \item \code{method}: a character string that denotes the method, i.e., "Lasso", "adaLasso" or "taLasso".
 #'   \item \code{parameters}: a data frame containing all lambdas (i.e., penalty parameters) that are used in above \code{method} and the consequent cross-validated approximation errors (i.e., mean squared errors) as well as corresponding numbers of non zero coefficients of terms in the sieve.
 #'   \item \code{parameters.final}: a data frame containing the selected lambda and the corresponding cross-validated approximation error and number of non-zero coefficients. The selection rule is defined in argument \code{s}.
@@ -45,7 +46,6 @@
 #' @export
 #'
 #' @note The function \code{\link[glmnet]{cv.glmnet}} in package \pkg{glmnet} is applied to conduct Lasso-type methods in \code{dimada}. Cross-validation is demanded because out-of-sample approximation errors are needed to select the best model, as required in the dimension adaptive estimator.
-#'
 #' Moreover, post-selection OLS model is performed because the approximation error in Lasso-type methods also includes a regularization term which is always non-negative. Thus, it would be better to run a post-selection model without a regularization term so that the estimation result can be directly compared with other estimators.
 #'
 #' @author Chencheng Fang, Bonn Graduate School of Economics, University of Bonn. Email: \email{ccfang@uni-bonn.de}
@@ -95,6 +95,7 @@ dimada <- function(y,
                    parallel=FALSE,
                    lambda.min.ratio=1e-10,
                    s="lambda.min",
+                   save.sieve=FALSE,
                    seed=200)
   {
 
@@ -144,6 +145,9 @@ dimada <- function(y,
 
   # check if 's' is defined correctly
   if (any(base::length(s)!=1, !(s %in% c("lambda.min","lambda.1se")))) stop("The argument 's' has to be 'lambda.min' or 'lambda.1se'.")
+
+  # check if 'save.sieve' is a single logical value
+  if (!is.logical(save.sieve) | base::length(save.sieve)!=1) stop("The argument 'save.sieve' has to be a single logical value.")
 
   # check if 'seed' is a single integer or NULL
   if (!is.null(seed) && (seed%%1!=0 | base::length(seed) !=1)) stop("The argument 'seed' is a single integer or NULL.")
@@ -258,39 +262,75 @@ dimada <- function(y,
   # Output
   # --------------------------------
 
-  output <- list(Lasso=list(sieve=as.data.frame(cbind(response, terms.values)),
-                            method="LASSO",
-                            parameters=data.frame(cvms=lasso$cvm, lambdas=lasso.lambda, nzeros=lasso$nzero),
-                            parameters.final=data.frame(cvms=lasso$cvm[which(lasso$lambda==lasso[[s]])[1]],lambdas=lasso[[s]],nzeros=lasso$nzero[which(lasso$lambda==lasso[[s]])[1]]),
-                            coefs.final=data.frame(terms=colnames(terms.values)[lasso.final.coefs.index], coefs=lasso.final.coefs[lasso.final.coefs.index]),
-                            lasso.all=lasso,
-                            elapse=lasso.end-lasso.start,
-                            post.lm=post.lasso
-  ))
+  if (save.sieve) {
+    output <- list(Lasso=list(sieve=as.data.frame(cbind(response, terms.values)),
+                              method="LASSO",
+                              parameters=data.frame(cvms=lasso$cvm, lambdas=lasso.lambda, nzeros=lasso$nzero),
+                              parameters.final=data.frame(cvms=lasso$cvm[which(lasso$lambda==lasso[[s]])[1]],lambdas=lasso[[s]],nzeros=lasso$nzero[which(lasso$lambda==lasso[[s]])[1]]),
+                              coefs.final=data.frame(terms=colnames(terms.values)[lasso.final.coefs.index], coefs=lasso.final.coefs[lasso.final.coefs.index]),
+                              lasso.all=lasso,
+                              elapse=lasso.end-lasso.start,
+                              post.lm=post.lasso
+    ))
 
-  if (("adaLasso" %in% methods) & (sum(lasso.final.coefs!=0)>=2)) {
-    output <- append(output, list(adaLasso=list(sieve=as.data.frame(cbind(response, adaLasso.terms.values)),
-                                                method="Adaptive LASSO",
-                                                parameters=data.frame(cvms=adaLasso$cvm, lambdas=adaLasso.lambda, nzeros=adaLasso$nzero),
-                                                parameters.final=data.frame(cvms=adaLasso$cvm[which(adaLasso$lambda==adaLasso[[s]])[1]], lambdas=adaLasso[[s]], nzeros=adaLasso$nzero[which(adaLasso$lambda==adaLasso[[s]])[1]]),
-                                                terms.index = index.w.adaLasso,
-                                                coefs.final=data.frame(terms=colnames(adaLasso.terms.values)[adaLasso.final.coefs.index], coefs=adaLasso.final.coefs[adaLasso.final.coefs.index]),
-                                                adaLasso.all=adaLasso,
-                                                elapse=(adaLasso.end-adaLasso.start)+(lasso.end-lasso.start),
-                                                post.lm=post.adaLasso
-    )))
-    if (("taLasso" %in% methods) & (sum(adaLasso.final.coefs!=0)>=2)) {
-      if(sum(taLasso.s1.final.coefs!=0)>=2) {
-        output <- append(output, list(taLasso=list(sieve=as.data.frame(cbind(response, taLasso.terms.values)),
-                                                   method="Twin Adaptive LASSO",
-                                                   parameters=data.frame(cvms=taLasso$cvm, lambdas=taLasso.lambda, nzeros=taLasso$nzero),
-                                                   parameters.final=data.frame(cvms=taLasso$cvm[which(taLasso$lambda==taLasso[[s]])[1]], lambdas=taLasso[[s]], nzeros=taLasso$nzero[which(taLasso$lambda==taLasso[[s]])[1]]),
-                                                   terms.index=index.w.adaLasso[index.taLasso][index.w.taLasso],
-                                                   coefs.final=data.frame(terms=colnames(taLasso.terms.values)[taLasso.final.coefs.index], coefs=taLasso.final.coefs[taLasso.final.coefs.index]),
-                                                   taLasso.all=taLasso,
-                                                   elapse=(taLasso.s1.end-taLasso.s1.start)+(taLasso.end-taLasso.start)+(adaLasso.end-adaLasso.start)+(lasso.end-lasso.start),
-                                                   post.lm=post.taLasso
-        )))
+    if (("adaLasso" %in% methods) & (sum(lasso.final.coefs!=0)>=2)) {
+      output <- append(output, list(adaLasso=list(sieve=as.data.frame(cbind(response, adaLasso.terms.values)),
+                                                  method="Adaptive LASSO",
+                                                  parameters=data.frame(cvms=adaLasso$cvm, lambdas=adaLasso.lambda, nzeros=adaLasso$nzero),
+                                                  parameters.final=data.frame(cvms=adaLasso$cvm[which(adaLasso$lambda==adaLasso[[s]])[1]], lambdas=adaLasso[[s]], nzeros=adaLasso$nzero[which(adaLasso$lambda==adaLasso[[s]])[1]]),
+                                                  terms.index = index.w.adaLasso,
+                                                  coefs.final=data.frame(terms=colnames(adaLasso.terms.values)[adaLasso.final.coefs.index], coefs=adaLasso.final.coefs[adaLasso.final.coefs.index]),
+                                                  adaLasso.all=adaLasso,
+                                                  elapse=(adaLasso.end-adaLasso.start)+(lasso.end-lasso.start),
+                                                  post.lm=post.adaLasso
+      )))
+      if (("taLasso" %in% methods) & (sum(adaLasso.final.coefs!=0)>=2)) {
+        if(sum(taLasso.s1.final.coefs!=0)>=2) {
+          output <- append(output, list(taLasso=list(sieve=as.data.frame(cbind(response, taLasso.terms.values)),
+                                                     method="Twin Adaptive LASSO",
+                                                     parameters=data.frame(cvms=taLasso$cvm, lambdas=taLasso.lambda, nzeros=taLasso$nzero),
+                                                     parameters.final=data.frame(cvms=taLasso$cvm[which(taLasso$lambda==taLasso[[s]])[1]], lambdas=taLasso[[s]], nzeros=taLasso$nzero[which(taLasso$lambda==taLasso[[s]])[1]]),
+                                                     terms.index=index.w.adaLasso[index.taLasso][index.w.taLasso],
+                                                     coefs.final=data.frame(terms=colnames(taLasso.terms.values)[taLasso.final.coefs.index], coefs=taLasso.final.coefs[taLasso.final.coefs.index]),
+                                                     taLasso.all=taLasso,
+                                                     elapse=(taLasso.s1.end-taLasso.s1.start)+(taLasso.end-taLasso.start)+(adaLasso.end-adaLasso.start)+(lasso.end-lasso.start),
+                                                     post.lm=post.taLasso
+          )))
+        }
+      }
+    }
+  } else {
+    output <- list(Lasso=list(method="LASSO",
+                              parameters=data.frame(cvms=lasso$cvm, lambdas=lasso.lambda, nzeros=lasso$nzero),
+                              parameters.final=data.frame(cvms=lasso$cvm[which(lasso$lambda==lasso[[s]])[1]],lambdas=lasso[[s]],nzeros=lasso$nzero[which(lasso$lambda==lasso[[s]])[1]]),
+                              coefs.final=data.frame(terms=colnames(terms.values)[lasso.final.coefs.index], coefs=lasso.final.coefs[lasso.final.coefs.index]),
+                              lasso.all=lasso,
+                              elapse=lasso.end-lasso.start,
+                              post.lm=post.lasso
+    ))
+
+    if (("adaLasso" %in% methods) & (sum(lasso.final.coefs!=0)>=2)) {
+      output <- append(output, list(adaLasso=list(method="Adaptive LASSO",
+                                                  parameters=data.frame(cvms=adaLasso$cvm, lambdas=adaLasso.lambda, nzeros=adaLasso$nzero),
+                                                  parameters.final=data.frame(cvms=adaLasso$cvm[which(adaLasso$lambda==adaLasso[[s]])[1]], lambdas=adaLasso[[s]], nzeros=adaLasso$nzero[which(adaLasso$lambda==adaLasso[[s]])[1]]),
+                                                  terms.index = index.w.adaLasso,
+                                                  coefs.final=data.frame(terms=colnames(adaLasso.terms.values)[adaLasso.final.coefs.index], coefs=adaLasso.final.coefs[adaLasso.final.coefs.index]),
+                                                  adaLasso.all=adaLasso,
+                                                  elapse=(adaLasso.end-adaLasso.start)+(lasso.end-lasso.start),
+                                                  post.lm=post.adaLasso
+      )))
+      if (("taLasso" %in% methods) & (sum(adaLasso.final.coefs!=0)>=2)) {
+        if(sum(taLasso.s1.final.coefs!=0)>=2) {
+          output <- append(output, list(taLasso=list(method="Twin Adaptive LASSO",
+                                                     parameters=data.frame(cvms=taLasso$cvm, lambdas=taLasso.lambda, nzeros=taLasso$nzero),
+                                                     parameters.final=data.frame(cvms=taLasso$cvm[which(taLasso$lambda==taLasso[[s]])[1]], lambdas=taLasso[[s]], nzeros=taLasso$nzero[which(taLasso$lambda==taLasso[[s]])[1]]),
+                                                     terms.index=index.w.adaLasso[index.taLasso][index.w.taLasso],
+                                                     coefs.final=data.frame(terms=colnames(taLasso.terms.values)[taLasso.final.coefs.index], coefs=taLasso.final.coefs[taLasso.final.coefs.index]),
+                                                     taLasso.all=taLasso,
+                                                     elapse=(taLasso.s1.end-taLasso.s1.start)+(taLasso.end-taLasso.start)+(adaLasso.end-adaLasso.start)+(lasso.end-lasso.start),
+                                                     post.lm=post.taLasso
+          )))
+        }
       }
     }
   }

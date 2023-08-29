@@ -106,7 +106,7 @@ trig.gen <- function(data,
   # --------------------------------
 
   output <- list(train=cbind(cosine.object$train, sine.object$train))
-  if (!is.null(test.data)) output <- append(output, list(test=cbind(cosine.object$train, sine.object$train)))
+  if (!is.null(test.data)) output <- append(output, list(test=cbind(cosine.object$test, sine.object$test)))
 
   attr(output, "n.basis") <- n.basis
   return(output)
