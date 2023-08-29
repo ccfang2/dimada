@@ -21,7 +21,7 @@ devtools::install_github("ccfang2/dimada")
 
 The main command in this package is `dimada()`. Users are required to import response variable and a dataset of original independent variables. To construct sieves, users can choose from a variety of basis functions including power series, Legendre polynomials, B-splines and trigonometric polynomials, etc. Since a multivariate setup is considered, users also need to define the maximum number of interacting variables in a single term of sieves. If users already have the dataset of sieves, they could directly import the sieves instead of the original variables in this command. 
 
-In terms of Lasso-type methods, users can choose from Lasso, [adaptive Lasso](https://www.tandfonline.com/doi/abs/10.1198/016214506000000735) and [twin adaptive Lasso](https://www.sciencedirect.com/science/article/abs/pii/S030440762100049X). Lasso is the basedline method, so it has to be included in the argument of `methods` in `dimada()`. An example of this command is given below.
+In terms of Lasso-type methods, users can choose from Lasso, [adaptive Lasso](https://www.tandfonline.com/doi/abs/10.1198/016214506000000735) and [twin adaptive Lasso](https://www.sciencedirect.com/science/article/abs/pii/S030440762100049X). Lasso is the baseline method, so it has to be included in the argument of `methods` in `dimada()`. An example of this command is given below.
 
 ```r
 library(dimada)
@@ -179,6 +179,15 @@ sieve1 <- poly.gen(data=df, test.data=NULL, n.basis=10, max.interaction=3, legen
 ```
 
 It is worthy of mentioning that users could also compute sieves for a test dataset, which can be used for evaluation of models estimated with sieves of the main dataset. 
+
+## Latest release
+
+<details><summary>Version 1.0.1 </summary>
+      <ol>
+            <li> Fix an error in the output of <code>trig.gen()</code>: the output now contains the data frames of sieves for both train and test datasets if original test dataset is given.
+            <li> Add an argument <code>save.sieve</code> in the function <code>dimada()</code> so that one can choose if he hopes to save the data frame of generated or given sieves in the output of <code>dimada()</code>. The sieves can sometimes be very large in size, so if a user won't use it in future, it is advised not to save it in the output which may take up your machine memory.
+      </ol>
+</details>
 
 ## Note
 - This package is a part of my [thesis](https://github.com/ccfang2/Masters_Thesis), which is supervised by Prof. Dr. Joachim Freyberger. The idea of constructing such a dimension adaptive estimator is from him. This is an ongoing project, and future improvement on this package is expected.
