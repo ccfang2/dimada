@@ -1,6 +1,6 @@
 Package: dimada
 Title: Dimension Adaptive Estimation
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: 
     person("Chencheng", "Fang", , "ccfang@uni-bonn.de", role = c("aut", "cre"))
 Maintainer: Chencheng Fang <ccfang@uni-bonn.de>
