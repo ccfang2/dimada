@@ -180,7 +180,7 @@ sieve1 <- poly.gen(data=df, test.data=NULL, n.basis=10, max.interaction=3, legen
 
 It is worthy of mentioning that users could also compute sieves for a test dataset, which can be used for evaluation of models estimated with sieves of the main dataset. 
 
-## Latest release
+## Log of Change
 
 <details><summary>Version 1.0.1 </summary>
       <ol>
