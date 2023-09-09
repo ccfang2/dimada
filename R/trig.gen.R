@@ -99,7 +99,7 @@ trig.gen <- function(data,
   if (ncol(data) %in% 1:20) {
     index.table <- base::eval(base::parse(text = base::paste("index.table.xdim",ncol(data),sep="")))
   } else {
-    index.table <- Sieve:::create_index_matrix(xdim = ncol(data), basisN = 10e4)[,-1] - 1
+    index.table <- Sieve::create_index_matrix(xdim = ncol(data), basisN = 10e4)[,-1] - 1
   }
 
   keep.rows.degree <- base::apply(index.table, 1, function(row) sum(row) <= n.basis)
