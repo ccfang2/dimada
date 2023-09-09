@@ -48,7 +48,7 @@ The plot is as follows.
 
 <img src="man/figures/plot.png" alt="Plot" width="600"/>    
 
-In particular, post-selection OLS model is performed after each Lasso-type method because the approximation error in Lasso-type methods also includes a regularization term which is always non-negative. Thus, it would be better to run a post-selection model without a regularization term so that the estimation result can be directly compared with other estimators. The results of Lasso-type methods and the post-selection OLS models can be quickly printed out with the command `dimada.summary()`.
+In particular, post-selection OLS model is performed after each Lasso-type method to obtain unbiased coefficients because the estimated coefficients from Lasso-type methods are biased due to the penalty term in the loss function. Then, the coefficients from post-selection OLS model could be used for prediction in new dataset. The results of Lasso-type methods and the post-selection OLS models can be quickly printed out with the command `dimada.summary()`.
 
 ```r
 dimada.summary(dimada2,verbose=TRUE)
@@ -61,110 +61,92 @@ The summary is as follows.
           Sieve 
 ======================================== 
 Basis function: B-Splines
-Number of basis for each original variable: 11
+Number of basis in each term: 5
 Maximum number of interactions in each term: 1
-Time used: 0.2779632 secs
+Time used: 0.5402379 secs
  
 ======================================== 
           LASSO
 ======================================== 
 Selection rule of lambda: Value of lambda that gives minimum MSE
-Selected lambda: 1.10e-01
-Number of selected terms: 16
-Cross-validated Empirical MSE: 1.29e+00
-Time used: 1.216036 secs
+Selected lambda: 2.94e-02
+Number of selected terms: 11
+Cross-validated Empirical MSE: 1.19e+00
+Time used: 0.1058569 secs
  
 Coefficients: 
-| c.bs1    -4.07724| 
-| b.bs3    -0.30898| 
-| c.bs3    -0.65680| 
-| b.bs6     0.25717| 
-| a.bs7     0.73617| 
-| c.bs7     0.55403| 
-| a.bs8     0.19316| 
-| b.bs8     0.75094| 
-| c.bs8     1.04857| 
-| a.bs9     0.42152| 
-| b.bs9     0.31796| 
-| c.bs9     0.35445| 
-| b.bs10    0.17608| 
-| c.bs10    0.97992| 
-| b.bs11    0.54156| 
-| c.bs11    0.32007| 
+| a.bs1   -0.17580| 
+| b.bs1   -0.13075| 
+| c.bs1   -3.96154| 
+| b.bs2   -0.89452| 
+| c.bs2   -0.49023| 
+| a.bs3    0.28987| 
+| a.bs4    0.78600| 
+| b.bs4    0.12092| 
+| c.bs4    0.94517| 
+| b.bs5    0.70675| 
+| c.bs5    0.31314| 
 
 ======================================== 
           Post LASSO
 ======================================== 
 Method: OLS on selected terms
-In-sample MSE: 7.85e-01
+In-sample MSE: 9.01e-01
  
 Coefficients: 
-|(Intercept)  -0.17972| 
-|` c.bs1`     -4.74913| 
-|` b.bs3`     -0.45928| 
-|` c.bs3`     -1.02934| 
-|` b.bs6`      0.74405| 
-|` a.bs7`      0.87448| 
-|` c.bs7`      0.57142| 
-|` a.bs8`      0.23965| 
-|` b.bs8`      1.35717| 
-|` c.bs8`      1.40354| 
-|` a.bs9`      0.81540| 
-|` b.bs9`      0.54066| 
-|` c.bs9`      0.41629| 
-|` b.bs10`     0.62925| 
-|` c.bs10`     0.96740| 
-|` b.bs11`     1.31007| 
-|` c.bs11`     1.15840| 
+|(Intercept)   0.35890| 
+|` a.bs1`     -0.15855| 
+|` b.bs1`     -0.19250| 
+|` c.bs1`     -4.09278| 
+|` b.bs2`     -0.91587| 
+|` c.bs2`     -0.54928| 
+|` a.bs3`      0.39223| 
+|` a.bs4`      0.89797| 
+|` b.bs4`      0.14660| 
+|` c.bs4`      0.95196| 
+|` b.bs5`      0.81853| 
+|` c.bs5`      0.34737| 
 
 ======================================== 
           Adaptive LASSO
 ======================================== 
 Selection rule of lambda: Value of lambda that gives minimum MSE
-Selected lambda: 5.72e-02
-Number of selected terms: 13
-Cross-validated Empirical MSE: 1.11e+00
-Time used: 1.439426 secs
+Selected lambda: 6.37e-02
+Number of selected terms: 8
+Cross-validated Empirical MSE: 1.14e+00
+Time used: 0.2062559 secs
  
 Coefficients: 
-| c.bs1    -4.74401| 
-| b.bs3    -0.36603| 
-| c.bs3    -0.95327| 
-| b.bs6     0.28828| 
-| a.bs7     0.99932| 
-| c.bs7     0.45517| 
-| b.bs8     1.07156| 
-| c.bs8     1.52349| 
-| a.bs9     0.70731| 
-| b.bs9     0.39910| 
-| c.bs10    1.35883| 
-| b.bs11    1.12725| 
-| c.bs11    0.35025| 
+| c.bs1   -4.03370| 
+| b.bs2   -1.09822| 
+| c.bs2   -0.42195| 
+| a.bs3    0.25521| 
+| a.bs4    0.87472| 
+| c.bs4    1.07301| 
+| b.bs5    0.68924| 
+| c.bs5    0.15170| 
 
 ======================================== 
           Post Adaptive LASSO
 ======================================== 
 Method: OLS on selected terms
-In-sample MSE: 7.99e-01
+In-sample MSE: 9.06e-01
  
 Coefficients: 
-|(Intercept)  -0.077487| 
-|` c.bs1`     -4.787488| 
-|` b.bs3`     -0.584480| 
-|` c.bs3`     -1.054414| 
-|` b.bs6`      0.629745| 
-|` a.bs7`      1.023173| 
-|` c.bs7`      0.430128| 
-|` b.bs8`      1.196595| 
-|` c.bs8`      1.631726| 
-|` a.bs9`      0.903138| 
-|` b.bs9`      0.745756| 
-|` c.bs10`     1.208429| 
-|` b.bs11`     1.473172| 
-|` c.bs11`     1.050083| 
+|(Intercept)   0.31862| 
+|` c.bs1`     -4.06092| 
+|` b.bs2`     -1.06783| 
+|` c.bs2`     -0.54647| 
+|` a.bs3`      0.49315| 
+|` a.bs4`      0.93811| 
+|` c.bs4`      0.98340| 
+|` b.bs5`      0.82966| 
+|` c.bs5`      0.36596| 
 ```
 
-As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.29 and 1.11. However, this MSE includes the regularization term which is always non-negative. To remove such an impact, post-Lasso and post-adaptive Lasso are performed, and MSEs for both these post-selection methods are 0.785 and 0.799. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller approximation error than parametric OLS estimator, less than 2/3 of it.
+As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.19 and 1.14. However, the coefficients are biased due to the penalty term in loss function. To remove such an impact, post-Lasso and post-adaptive Lasso are performed, and MSEs for these post-selection methods are 0.901 and 0.906. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller in-sample approximation error than parametric OLS estimator, about 2/3 of it. 
+
+However, in practice, it is adviced to split the original dataset into train data and test data, then perform our dimension adaptive estimator in train data and finally use the coefficients from post-selection methods to make predictions in test data. The out-of-sample MSE of our estimator can thus be computed and compared with other estimators.
 
 ## Other Commands
 
@@ -182,15 +164,23 @@ It is worthy of mentioning that users could also compute sieves for a test datas
 
 ## Log of Change
 
-<details><summary>Version 1.0.1 </summary>
+<details><summary>Version 1.0.1 (Date: 30.8.2023) </summary>
       <ol>
             <li> Fix an error in the output of <code>trig.gen()</code>: the output now contains the data frames of sieves for both train and test datasets if original test dataset is given.
             <li> Add an argument <code>save.sieve</code> in the function <code>dimada()</code> so that one can choose if he hopes to save the data frame of generated or given sieves in the output of <code>dimada()</code>. The sieves can sometimes be very large in size, so if a user won't use it in future, it is advised not to save it in the output which may take up your machine memory.
       </ol>
 </details>
 
+<details><summary>Version 1.0.2 (Date: 9.9.2023) </summary>
+      <ol>
+            <li> Fix an error in <code>trig.gen()</code> so it considers the interactions between cosine and sine components in trigonometric polynomials.
+            <li> The function <code>create_index_matrix()</code> in package <code>Sieve</code> is now exportable, so I could call the function directly in my package.
+            <li> Outliers in the estimated coefficients from Lasso-type methods are excluded in post-selection methods.
+      </ol>
+</details>
+
 ## Note
-- This package is a part of my [thesis](https://github.com/ccfang2/Masters_Thesis), which is supervised by Prof. Dr. Joachim Freyberger. The idea of constructing such a dimension adaptive estimator is from him. This is an ongoing project, and future improvement on this package is expected.
+- This package is a part of my [thesis](https://github.com/ccfang2/Masters_Thesis), which is supervised by Prof. Dr. Joachim Freyberger. This is an ongoing project, and future improvement on this package is expected.
 - The picture on the hexagon badge of this package is drawn with an [AI image creator](https://openai.com/dall-e-2) of Dall·E, OpenAI.
 
 ## Contact
