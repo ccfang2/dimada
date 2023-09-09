@@ -1,6 +1,6 @@
 Package: dimada
 Title: Dimension Adaptive Estimation
-Version: 1.0.1
+Version: 1.0.2
 Authors@R: 
     person("Chencheng", "Fang", , "ccfang@uni-bonn.de", role = c("aut", "cre"))
 Maintainer: Chencheng Fang <ccfang@uni-bonn.de>
@@ -20,5 +20,7 @@ Imports:
     magrittr,
     plde,
     plyr,
+    Sieve,
     splines,
+    stats,
     wavethresh
