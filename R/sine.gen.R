@@ -15,7 +15,7 @@
 #' @seealso \link{poly.gen}; \link{bspline.gen}; \link{cosine.gen}; \link{trig.gen}; \link{haar.gen}; \link{daubechies.gen}; \link{dimada}.
 #' @export
 #'
-#' @note An internal function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{sine.gen}.
+#' @note The function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{sine.gen}.
 #'
 #' @author Chencheng Fang, Bonn Graduate School of Economics, University of Bonn. Email: \email{ccfang@uni-bonn.de}
 #'
@@ -85,18 +85,17 @@ sine.gen <- function(data,
   # compute the lower bound of smoothness for sine polynomials.
   # this set of basis functions theoretically includes the best approximation for all three cases of underlying model in my paper
   smoothness <- (ncol(data)+1)/2
-  if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data))*nrow(data)^(1/(2*smoothness+1)))
+  if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data), base=10)*nrow(data)^(1/(2*smoothness+1)))
 
   # --------------------------------
   # generate index tables
   # --------------------------------
 
-  if (ncol(data) %in% 1:30) {
+  # expand.grid may be an alternative, but it can easily run out of vector memory
+  if (ncol(data) %in% 1:20) {
     index.table <- base::eval(base::parse(text = base::paste("index.table.xdim",ncol(data),sep="")))
   } else {
-    #index.table <- Sieve:::create_index_matrix(xdim = ncol(data), basisN = 10e5)[,-1] - 1
-    stop("The number of variables is so large that the consequent sieve is of huge dimension,
-         and it will then be computationally hard to perform dimension adaptive estimation.")
+    index.table <- Sieve:::create_index_matrix(xdim = ncol(data), basisN = 10e4)[,-1] - 1
   }
 
   keep.rows.degree <- base::apply(index.table, 1, function(row) sum(row) <= n.basis)

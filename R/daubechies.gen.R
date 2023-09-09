@@ -20,7 +20,7 @@
 #' longer time to compute the sieve than other types of basis functions like B-splines.
 #'
 #' The command \code{\link[FlexCoDE]{daubechies_basis}} in package \pkg{FlexCoDE} is applied to create daubechies wavelets for each variable, and
-#' an internal function \code{create_index_matrix} in package \pkg{Sieve} is used to help with the generation of multivariate sieves in this function \code{daubechies.gen}.
+#' the function \code{create_index_matrix} in package \pkg{Sieve} is used to help with the generation of multivariate sieves in this function \code{daubechies.gen}.
 #'
 #' @author Chencheng Fang, Bonn Graduate School of Economics, University of Bonn. Email: \email{ccfang@uni-bonn.de}
 #'
@@ -87,7 +87,7 @@ daubechies.gen <- function(data,
 
   # compute the lower bound of smoothness for daubechies wavelets
   smoothness <- (ncol(data)+1)/2
-  if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data), base=5)*nrow(data)^(1/(2*smoothness+1)))
+  if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data), base=10)*nrow(data)^(1/(2*smoothness+1)))
 
   # rescale the columns of matrix to [0,1]
   data <- base::apply(data, 2, function(x) (x-min(x))/(max(x)-min(x)))
@@ -97,12 +97,11 @@ daubechies.gen <- function(data,
   # generate index tables
   # --------------------------------
 
-  if (ncol(data) %in% 1:30) {
+  # expand.grid may be an alternative, but it can easily run out of vector memory
+  if (ncol(data) %in% 1:20) {
     index.table <- base::eval(base::parse(text = base::paste("index.table.xdim",ncol(data),sep="")))
   } else {
-    #index.table <- Sieve:::create_index_matrix(xdim = ncol(data), basisN = 10e5)[,-1] - 1
-    stop("The number of variables is so large that the consequent sieve is of huge dimension,
-         and it will then be computationally hard to perform dimension adaptive estimation.")
+    index.table <- Sieve:::create_index_matrix(xdim = ncol(data), basisN = 10e4)[,-1] - 1
   }
 
   keep.rows.degree <- base::apply(index.table, 1, function(row) sum(row) <= 2^(n.basis+1)-2)
@@ -139,7 +138,7 @@ daubechies.gen <- function(data,
   terms.names <- base::unlist(terms.names)
 
   # --------------------------------
-  # define a function of daubechies_basis ( in reference to R package 'FlexCoDE': https://github.com/rizbicki/FlexCoDE )
+  # define a function of daubechies_basis (from R package 'FlexCoDE': https://github.com/rizbicki/FlexCoDE)
   # --------------------------------
 
   .pow2seq <- function(n) {

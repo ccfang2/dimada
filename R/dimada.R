@@ -46,7 +46,7 @@
 #' @export
 #'
 #' @note The function \code{\link[glmnet]{cv.glmnet}} in package \pkg{glmnet} is applied to conduct Lasso-type methods in \code{dimada}. Cross-validation is demanded because out-of-sample approximation errors are needed to select the best model, as required in the dimension adaptive estimator.
-#' Moreover, post-selection OLS model is performed because the approximation error in Lasso-type methods also includes a regularization term which is always non-negative. Thus, it would be better to run a post-selection model without a regularization term so that the estimation result can be directly compared with other estimators.
+#' Moreover, post-selection OLS model is performed to obtain unbiased coefficients because the estimated coefficients from Lasso-type methods are biased due to the penalty term in the loss function. So, the coefficients from post-selection OLS model could be used for prediction.
 #'
 #' @author Chencheng Fang, Bonn Graduate School of Economics, University of Bonn. Email: \email{ccfang@uni-bonn.de}
 #'
@@ -182,13 +182,16 @@ dimada <- function(y,
 
   set.seed(seed)
   lasso.start <- base::Sys.time()
-  lasso <- glmnet::cv.glmnet(x=as.matrix(terms.values), y=response, family=family, alpha =1, nfolds = nfolds, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=FALSE)
+  lasso <- glmnet::cv.glmnet(x=as.matrix(terms.values), y=response, family=family, alpha =1, nfolds = nfolds, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=TRUE)
   lasso.end <- base::Sys.time()
   lasso.lambda <- lasso$lambda
   lasso.final.coefs <- as.vector(as.matrix(lasso$glmnet.fit$beta, drop=FALSE)[,which(lasso$lambda==lasso[[s]])[1]]) #adding [1] to avoid repetition
+  # kick out the outliers in coefficients
+  lasso.final.coefs <- ifelse(lasso.final.coefs< -100*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0]) | lasso.final.coefs>100*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0]),0, lasso.final.coefs)
   lasso.final.coefs.index <- lasso.final.coefs!=0
 
   # post lasso with ols
+  # the term of intercept is already included in sieve. If it is important, it would remain in the selected term, so there is no need to have an additional intercept in ols.
   post.lasso <- stats::lm(response ~ ., data=cbind(response=response, terms.values[,colnames(terms.values)[lasso.final.coefs.index],drop=FALSE]))
 
   # --------------------------------
@@ -206,10 +209,12 @@ dimada <- function(y,
     # Adaptive LASSO estimation
     set.seed(seed)
     adaLasso.start <- base::Sys.time()
-    adaLasso <- glmnet::cv.glmnet(x=as.matrix(adaLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, penalty.factor=weight.adaLasso, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=FALSE)
+    adaLasso <- glmnet::cv.glmnet(x=as.matrix(adaLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, penalty.factor=weight.adaLasso, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=TRUE)
     adaLasso.end <- base::Sys.time()
     adaLasso.lambda <-  adaLasso$lambda
     adaLasso.final.coefs <- as.vector(as.matrix(adaLasso$glmnet.fit$beta, drop=FALSE)[,which(adaLasso$lambda==adaLasso[[s]])[1]])
+    # kick out outliers in coefficients
+    adaLasso.final.coefs <- ifelse(adaLasso.final.coefs< -100*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0]) | adaLasso.final.coefs>100*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0]),0,adaLasso.final.coefs)
     adaLasso.final.coefs.index <- adaLasso.final.coefs!=0
 
     # post adaptive lasso
@@ -228,10 +233,12 @@ dimada <- function(y,
       # the first step of Twin Adaptive LASSO
       set.seed(seed)
       taLasso.s1.start <- base::Sys.time()
-      taLasso.s1 <- glmnet::cv.glmnet(x=as.matrix(taLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=FALSE)
+      taLasso.s1 <- glmnet::cv.glmnet(x=as.matrix(taLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=TRUE)
       taLasso.s1.end <- base::Sys.time()
       taLasso.s1.lambda <-  taLasso.s1$lambda
       taLasso.s1.final.coefs <- as.vector(as.matrix(taLasso.s1$glmnet.fit$beta, drop=FALSE)[,which(taLasso.s1$lambda==taLasso.s1[[s]])[1]])
+      # kick out outliers in coefficients
+      taLasso.s1.final.coefs <- ifelse(taLasso.s1.final.coefs< -100*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0]) | taLasso.s1.final.coefs>100*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0]),0,taLasso.s1.final.coefs)
       taLasso.s1.final.coefs.index <- taLasso.s1.final.coefs!=0
 
       if (sum(taLasso.s1.final.coefs!=0)>=2) {
@@ -245,10 +252,12 @@ dimada <- function(y,
         # the second step of Twin Adaptive LASSO
         set.seed(seed)
         taLasso.start <- base::Sys.time()
-        taLasso <- glmnet::cv.glmnet(x=as.matrix(taLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, penalty.factor=weight.taLasso, standardize=TRUE, parallel=parallel, relax = FALSE,  nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=FALSE)
+        taLasso <- glmnet::cv.glmnet(x=as.matrix(taLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, penalty.factor=weight.taLasso, standardize=TRUE, parallel=parallel, relax = FALSE,  nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=TRUE)
         taLasso.end <- base::Sys.time()
         taLasso.lambda <-  taLasso$lambda
         taLasso.final.coefs <- as.vector(as.matrix(taLasso$glmnet.fit$beta, drop=FALSE)[,which(taLasso$lambda==taLasso[[s]])[1]])
+        # kick out outliers in coefficients
+        taLasso.final.coefs <- ifelse(taLasso.final.coefs< -100*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0]) | taLasso.final.coefs>100*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0]),0,taLasso.final.coefs)
         taLasso.final.coefs.index <- taLasso.final.coefs!=0
 
         # post twin adaptive lasso

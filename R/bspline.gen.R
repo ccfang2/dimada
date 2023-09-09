@@ -20,7 +20,7 @@
 #'
 #' @author Chencheng Fang, Bonn Graduate School of Economics, University of Bonn. Email: \email{ccfang@uni-bonn.de}
 #'
-#' @note An internal function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{bspline.gen}.
+#' @note The function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{bspline.gen}.
 #'
 #' @examples
 #' # a data frame with 3 variables and 100 observations
@@ -90,7 +90,7 @@ bspline.gen <- function(data,
 
   # compute the lower bound of smoothness for b-splines
   smoothness <- (ncol(data)+1)/2
-  if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data))*nrow(data)^(1/(2*smoothness+1)))
+  if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data), base=10)*nrow(data)^(1/(2*smoothness+1)))
 
   # check if 'spline.degree' is too large for the 'n.basis'
   # if so, assign 'n.basis' to be spline.degree+1
@@ -100,15 +100,14 @@ bspline.gen <- function(data,
   # generate index tables
   # --------------------------------
 
-  if (ncol(data) %in% 1:30) {
+  # expand.grid may be an alternative, but it can easily run out of vector memory
+  if (ncol(data) %in% 1:20) {
     index.table <- base::eval(base::parse(text = base::paste("index.table.xdim",ncol(data),sep="")))
   } else {
-    #index.table <- Sieve:::create_index_matrix(xdim = ncol(data), basisN = 10e5)[,-1] - 1
-    stop("The number of variables is so large that the consequent sieve is of huge dimension,
-         and it will then be computationally hard to perform dimension adaptive estimation.")
+    index.table <- Sieve::create_index_matrix(xdim = ncol(data), basisN = 10e4)[,-1] - 1
   }
 
-  keep.rows.degree <- base::apply(index.table, 1, function(row) max(row) <= n.basis)
+  keep.rows.degree <- base::apply(index.table, 1, function(row) max(row) <= n.basis) #sum
   index.table <- index.table[keep.rows.degree, , drop=FALSE]
 
   keep.rows.interact <- base::apply(index.table, 1, function(row) base::length(row[row!=0]) <= max.interaction)

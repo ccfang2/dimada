@@ -15,8 +15,9 @@
 #' @seealso \link{poly.gen}; \link{bspline.gen}; \link{cosine.gen}; \link{sine.gen}; \link{haar.gen}; \link{daubechies.gen}; \link{dimada}.
 #' @export
 #'
-#' @note By definition, trigonometric polynomials are sum of cosine and sine polynomials. Hence, in the construction of \code{trig.gen} command, functions \code{cosine.gen} and \code{sine.gen} are called upon and the resulting sieves from them are then combined
-#' to get the final sieve for \code{trig.gen}.
+#' @note In general, trigonometric polynomials are a sum of cosine polynomials and sine polynomials, so the size of resulting trigonometric sieve is as twice as the size of cosine or sine sieve with the same input arguments, if no interaction between variables is allowed.
+#' However, if interactions are permitted, the size of trigonometric sieve is much larger due to the fact that it further considers the interactions between the cosine and sine components.
+#' The function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{trig.gen}.
 #'
 #' @author Chencheng Fang, Bonn Graduate School of Economics, University of Bonn. Email: \email{ccfang@uni-bonn.de}
 #'
@@ -82,33 +83,89 @@ trig.gen <- function(data,
     test.data <- test.data[,var.names]
   }
 
-  # compute the lower bound of smoothness for cosine polynomials.
-  # this set of basis functions theoretically includes the best approximation for all three cases of underlying model in my paper
+  # compute the lower bound of smoothness for trigonometric polynomials.
   smoothness <- (ncol(data)+1)/2
-  if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data))*nrow(data)^(1/(2*smoothness+1)))
+  # this set of basis functions theoretically includes the best approximation for all three cases of underlying model in my paper
+  if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data), base=10)*nrow(data)^(1/(2*smoothness+1)))
+  # it is more convenient to have an even n.basis, because we need to compute both a cosine and a sine component for each trigonometric basis
+  n.basis.original <- n.basis
+  if (n.basis%%2==1) n.basis<-n.basis+1
 
   # --------------------------------
-  # use cosine.gen and sine.gen
+  # generate index tables
   # --------------------------------
 
-  cosine.object <- cosine.gen(data=data,
-                              test.data=test.data,
-                              n.basis=n.basis,
-                              max.interaction=max.interaction)
+  # expand.grid may be an alternative, but it can easily run out of vector memory
+  if (ncol(data) %in% 1:20) {
+    index.table <- base::eval(base::parse(text = base::paste("index.table.xdim",ncol(data),sep="")))
+  } else {
+    index.table <- Sieve:::create_index_matrix(xdim = ncol(data), basisN = 10e4)[,-1] - 1
+  }
 
-  sine.object <- sine.gen(data=data,
-                          test.data=test.data,
-                          n.basis=n.basis,
-                          max.interaction=max.interaction)
+  keep.rows.degree <- base::apply(index.table, 1, function(row) sum(row) <= n.basis)
+  index.table <- index.table[keep.rows.degree, ,drop=FALSE]
+  keep.rows.interact <- base::apply(index.table, 1, function(row) length(row[row!=0]) <= max.interaction)
+  index.table <- index.table[keep.rows.interact, ,drop=FALSE]
+  #index.table <- index.table[-1, ,drop=FALSE]
+  colnames(index.table) <- var.names
+
+  # --------------------------------
+  # generate names for trigonometric polynomial terms
+  # --------------------------------
+
+  # define a function to generate name for each term
+  terms.names.gen <- function(index.row) {
+    if (sum(index.row)==0) {
+      name <- "Intercept"
+    } else {
+      name <- character()
+      for (i in 1:length(index.row)) {
+        if (index.row[i] != 0){
+          name.temp <- if (index.row[i]%%2==1) {base::paste(var.names[i],(index.row[i]+1)/2, sep=".cos")} else {base::paste(var.names[i],index.row[i]/2, sep=".sin")}
+          name <- base::paste(name,name.temp,sep=" * ")
+        } else name <- name
+      }
+      name <- base::substr(name,3,base::nchar(name))
+    }
+    return(name)
+  }
+
+  # generate names for all terms
+  terms.names <- base::apply(index.table,1,terms.names.gen)
+  terms.names <- base::unlist(terms.names)
+
+  # --------------------------------
+  # compute values for trigonometric polynomial terms
+  # --------------------------------
+
+  if (!is.null(test.data)) {
+    trigs <- plyr::llply(1:ncol(data),function(x) cbind(1,t(plyr::ldply(1:n.basis, function(y) if(y%%2==1) {cos(((y+1)/2)*pi*data[,x])} else{sin((y/2)*pi*data[,x])}))))
+    terms.values.int <- base::apply(index.table,1, function(x) plyr::llply(1:ncol(index.table), function(y) trigs[[y]][,(x[y]+1)]))
+    terms.values <- as.data.frame(t(plyr::ldply(terms.values.int, function(x) Reduce("*", x))))
+
+    trigs.test <- plyr::llply(1:ncol(test.data),function(x) cbind(1,t(plyr::ldply(1:n.basis, function(y) if(y%%2==1) {cos(((y+1)/2)*pi*test.data[,x])} else {sin((y/2)*pi*test.data[,x])}))))
+    terms.values.int.test <- base::apply(index.table,1, function(x) plyr::llply(1:ncol(index.table), function(y) trigs.test[[y]][,(x[y]+1)]))
+    terms.values.test <- as.data.frame(t(plyr::ldply(terms.values.int.test, function(x) Reduce("*", x))))
+
+    base::colnames(terms.values.test) <- terms.names
+    base::rownames(terms.values.test) <- NULL
+  } else {
+    trigs <- plyr::llply(1:ncol(data),function(x) cbind(1,t(plyr::ldply(1:n.basis, function(y) if(y%%2==1) {cos(((y+1)/2)*pi*data[,x])} else {sin((y/2)*pi*data[,x])}))))
+    terms.values.int <- base::apply(index.table,1, function(x) plyr::llply(1:ncol(index.table), function(y) trigs[[y]][,(x[y]+1)]))
+    terms.values <- as.data.frame(t(plyr::ldply(terms.values.int, function(x) Reduce("*", x))))
+  }
+
+  base::colnames(terms.values) <- terms.names
+  base::rownames(terms.values) <- NULL
 
   # --------------------------------
   # output
   # --------------------------------
 
-  output <- list(train=cbind(cosine.object$train, sine.object$train))
-  if (!is.null(test.data)) output <- append(output, list(test=cbind(cosine.object$test, sine.object$test)))
+  output <- list(train=terms.values)
+  if (!is.null(test.data)) output <- append(output, list(test=terms.values.test))
 
-  attr(output, "n.basis") <- n.basis
+  attr(output, "n.basis") <- n.basis.original
   return(output)
 
   options(warn=0)
