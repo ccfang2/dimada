@@ -27,7 +27,6 @@
 #' @param s a character string that specifies the selection criterion of \code{lambda} in Lasso-type regularization. Available \code{"s"} includes \code{"lambda.min"} and \code{"lambda.1se"}. The former chooses the \code{lambda} that minimizes the cross-validated (i.e., out-of-sample) approximation error,
 #' while the latter selects the largest value of \code{lambda} such that the cross-validated approximation error is within 1 standard error of the minimum. Default is \code{"lambda.min"}.
 #' @param save.sieve a logical value that indicates if a user hopes to save the data frame of sieves in the output. Default is \code{FALSE}.
-#' @param seed an integer that controls the randomness of cross validation. With all other arguments remain unchanged, the same seed will lead to the same output. \code{seed=NULL} implies no control over the randomness.
 #'
 #' @return The \code{dimada} command gives out an object of S3 class \code{"dimada"}, which is a list of results from all methods defined in the argument \code{methods} above. The result generally consists of the following items.
 #' \itemize{
@@ -95,8 +94,7 @@ dimada <- function(y,
                    parallel=FALSE,
                    lambda.min.ratio=1e-10,
                    s="lambda.min",
-                   save.sieve=FALSE,
-                   seed=200)
+                   save.sieve=FALSE)
   {
 
   # --------------------------------
@@ -149,9 +147,6 @@ dimada <- function(y,
   # check if 'save.sieve' is a single logical value
   if (!is.logical(save.sieve) | base::length(save.sieve)!=1) stop("The argument 'save.sieve' has to be a single logical value.")
 
-  # check if 'seed' is a single integer or NULL
-  if (!is.null(seed) && (seed%%1!=0 | base::length(seed) !=1)) stop("The argument 'seed' is a single integer or NULL.")
-
   # --------------------------------
   # data preparation
   # --------------------------------
@@ -180,7 +175,6 @@ dimada <- function(y,
   # LASSO
   # --------------------------------
 
-  set.seed(seed)
   lasso.start <- base::Sys.time()
   lasso <- glmnet::cv.glmnet(x=as.matrix(terms.values), y=response, family=family, alpha =1, nfolds = nfolds, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=TRUE)
   lasso.end <- base::Sys.time()
@@ -192,6 +186,8 @@ dimada <- function(y,
 
   # post lasso with ols
   # the term of intercept is already included in sieve. If it is important, it would remain in the selected term, so there is no need to have an additional intercept in ols.
+  # it would be better to use glm because the family may not be 'gaussian'. This remains to be revised in future version.
+  # post.lasso <- stats::glm(response ~ ., data=cbind(response=response, terms.values[,colnames(terms.values)[lasso.final.coefs.index],drop=FALSE]), family = base::eval(base::parse(text=family)))
   post.lasso <- stats::lm(response ~ ., data=cbind(response=response, terms.values[,colnames(terms.values)[lasso.final.coefs.index],drop=FALSE]))
 
   # --------------------------------
@@ -207,7 +203,6 @@ dimada <- function(y,
     adaLasso.terms.values <- terms.values[,index.w.adaLasso]
 
     # Adaptive LASSO estimation
-    set.seed(seed)
     adaLasso.start <- base::Sys.time()
     adaLasso <- glmnet::cv.glmnet(x=as.matrix(adaLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, penalty.factor=weight.adaLasso, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=TRUE)
     adaLasso.end <- base::Sys.time()
@@ -218,6 +213,7 @@ dimada <- function(y,
     adaLasso.final.coefs.index <- adaLasso.final.coefs!=0
 
     # post adaptive lasso
+    # post.adaLasso <- stats::glm(response ~ ., data=cbind(response=response, adaLasso.terms.values[,colnames(adaLasso.terms.values)[adaLasso.final.coefs.index],drop=FALSE]), family = base::eval(base::parse(text=family)))
     post.adaLasso <- stats::lm(response ~ ., data=cbind(response=response, adaLasso.terms.values[,colnames(adaLasso.terms.values)[adaLasso.final.coefs.index],drop=FALSE]))
 
     # --------------------------------
@@ -231,7 +227,6 @@ dimada <- function(y,
       taLasso.terms.values <- adaLasso.terms.values[,index.taLasso]
 
       # the first step of Twin Adaptive LASSO
-      set.seed(seed)
       taLasso.s1.start <- base::Sys.time()
       taLasso.s1 <- glmnet::cv.glmnet(x=as.matrix(taLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, standardize=TRUE, parallel=parallel, relax = FALSE, nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=TRUE)
       taLasso.s1.end <- base::Sys.time()
@@ -250,7 +245,6 @@ dimada <- function(y,
         taLasso.terms.values <- taLasso.terms.values[,index.w.taLasso]
 
         # the second step of Twin Adaptive LASSO
-        set.seed(seed)
         taLasso.start <- base::Sys.time()
         taLasso <- glmnet::cv.glmnet(x=as.matrix(taLasso.terms.values), y=response, family=family, alpha =1, nfolds = nfolds, penalty.factor=weight.taLasso, standardize=TRUE, parallel=parallel, relax = FALSE,  nlambda=500, lambda.min.ratio=lambda.min.ratio, type.measure = "mse", intercept=TRUE)
         taLasso.end <- base::Sys.time()
@@ -261,6 +255,7 @@ dimada <- function(y,
         taLasso.final.coefs.index <- taLasso.final.coefs!=0
 
         # post twin adaptive lasso
+        # post.taLasso <- stats::glm(response ~ ., data=cbind(response=response, taLasso.terms.values[,colnames(taLasso.terms.values)[taLasso.final.coefs.index],drop=FALSE]), family = base::eval(base::parse(text=family)))
         post.taLasso <- stats::lm(response ~ ., data=cbind(response=response, taLasso.terms.values[,colnames(taLasso.terms.values)[taLasso.final.coefs.index],drop=FALSE]))
 
       }
