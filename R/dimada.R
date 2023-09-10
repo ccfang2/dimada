@@ -181,7 +181,11 @@ dimada <- function(y,
   lasso.lambda <- lasso$lambda
   lasso.final.coefs <- as.vector(as.matrix(lasso$glmnet.fit$beta, drop=FALSE)[,which(lasso$lambda==lasso[[s]])[1]]) #adding [1] to avoid repetition
   # kick out the outliers in coefficients
-  lasso.final.coefs <- ifelse(lasso.final.coefs< -100*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE) | lasso.final.coefs>100*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE),0, lasso.final.coefs)
+  if (!is.na(basis) && basis=="bspline") {
+    lasso.final.coefs <- ifelse(lasso.final.coefs< stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-15*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE) | lasso.final.coefs> stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+15*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE),0, lasso.final.coefs)
+  } else {
+    lasso.final.coefs <- ifelse(lasso.final.coefs< stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-50*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE) | lasso.final.coefs> stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+50*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE),0, lasso.final.coefs)
+  }
   lasso.final.coefs.index <- lasso.final.coefs!=0
 
   # post lasso with ols
@@ -209,7 +213,11 @@ dimada <- function(y,
     adaLasso.lambda <-  adaLasso$lambda
     adaLasso.final.coefs <- as.vector(as.matrix(adaLasso$glmnet.fit$beta, drop=FALSE)[,which(adaLasso$lambda==adaLasso[[s]])[1]])
     # kick out outliers in coefficients
-    adaLasso.final.coefs <- ifelse(adaLasso.final.coefs< -100*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE) | adaLasso.final.coefs>100*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE),0,adaLasso.final.coefs)
+    if (!is.na(basis) && basis=="bspline") {
+      adaLasso.final.coefs <- ifelse(adaLasso.final.coefs< stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.25,na.rm = TRUE)-15*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE) | adaLasso.final.coefs>stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.75,na.rm = TRUE)+15*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE),0,adaLasso.final.coefs)
+    } else {
+      adaLasso.final.coefs <- ifelse(adaLasso.final.coefs< stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.25,na.rm = TRUE)-50*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE) | adaLasso.final.coefs>stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.75,na.rm = TRUE)+50*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE),0,adaLasso.final.coefs)
+    }
     adaLasso.final.coefs.index <- adaLasso.final.coefs!=0
 
     # post adaptive lasso
@@ -233,7 +241,11 @@ dimada <- function(y,
       taLasso.s1.lambda <-  taLasso.s1$lambda
       taLasso.s1.final.coefs <- as.vector(as.matrix(taLasso.s1$glmnet.fit$beta, drop=FALSE)[,which(taLasso.s1$lambda==taLasso.s1[[s]])[1]])
       # kick out outliers in coefficients
-      taLasso.s1.final.coefs <- ifelse(taLasso.s1.final.coefs< -100*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE) | taLasso.s1.final.coefs>100*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE),0,taLasso.s1.final.coefs)
+      if(!is.na(basis) && basis=="bspline") {
+        taLasso.s1.final.coefs <- ifelse(taLasso.s1.final.coefs< stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.25, na.rm = TRUE)-15*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE) | taLasso.s1.final.coefs>stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.75, na.rm = TRUE)+15*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE),0,taLasso.s1.final.coefs)
+      } else {
+        taLasso.s1.final.coefs <- ifelse(taLasso.s1.final.coefs< stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.25, na.rm = TRUE)-50*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE) | taLasso.s1.final.coefs>stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.75, na.rm = TRUE)+50*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE),0,taLasso.s1.final.coefs)
+      }
       taLasso.s1.final.coefs.index <- taLasso.s1.final.coefs!=0
 
       if (sum(taLasso.s1.final.coefs!=0)>=2) {
@@ -251,7 +263,11 @@ dimada <- function(y,
         taLasso.lambda <-  taLasso$lambda
         taLasso.final.coefs <- as.vector(as.matrix(taLasso$glmnet.fit$beta, drop=FALSE)[,which(taLasso$lambda==taLasso[[s]])[1]])
         # kick out outliers in coefficients
-        taLasso.final.coefs <- ifelse(taLasso.final.coefs< -100*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE) | taLasso.final.coefs>100*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE),0,taLasso.final.coefs)
+        if (!is.na(basis) && basis=="bspline") {
+          taLasso.final.coefs <- ifelse(taLasso.final.coefs< stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-15*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE) | taLasso.final.coefs>stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+15*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE),0,taLasso.final.coefs)
+        } else {
+          taLasso.final.coefs <- ifelse(taLasso.final.coefs< stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-50*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE) | taLasso.final.coefs>stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+50*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE),0,taLasso.final.coefs)
+        }
         taLasso.final.coefs.index <- taLasso.final.coefs!=0
 
         # post twin adaptive lasso
