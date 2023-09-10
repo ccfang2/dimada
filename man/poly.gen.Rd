@@ -35,7 +35,7 @@ In particular, if a user defines a test dataset which he hopes to use for his ow
 the test dataset with the same number of basis used for each variable of the main dataset. The command \code{\link[plde]{legendre_polynomial}} in package \pkg{plde} is applied to create Legendre polynomials.
 }
 \note{
-An internal function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{poly.gen}.
+The function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{poly.gen}.
 }
 \examples{
 # a data frame with 3 variables and 100 observations

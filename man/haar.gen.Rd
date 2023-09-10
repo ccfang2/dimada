@@ -32,7 +32,7 @@ large quantity if the defined level is high. Please read this \href{https://gith
 longer time to compute the sieve than other types of basis functions like B-splines.
 
 The command \code{\link[FlexCoDE]{haar_basis}} in package \pkg{FlexCoDE} is applied to create haar wavelets for each variable, and
-an internal function \code{create_index_matrix} in package \pkg{Sieve} is used to help with the generation of multivariate sieves in this function \code{haar.gen}.
+the function \code{create_index_matrix} in package \pkg{Sieve} is used to help with the generation of multivariate sieves in this function \code{haar.gen}.
 }
 \examples{
 # a data frame with 3 variables and 100 observations

@@ -24,6 +24,7 @@ or the consequent numbers of non zero coefficients. If more than one method is d
 # plot the output 'dimada2' in the example of function 'dimada'
 set.seed(200)
 df <- data.frame(a=runif(100), b=runif(100), c=runif(100))
+set.seed(200)
 response2 <- sin(2*df[,1])+tan(df[,2])+log(df[,3])+rnorm(100,0.04)
 dimada2 <- dimada(y=response2, x=df, basis="bspline", max.interaction=1,
                   methods=c("Lasso","adaLasso"))

@@ -18,13 +18,14 @@ an object and later print it out. See example below. Default is \code{TRUE}.}
 }
 \description{
 The \code{dimada.summary} command aims to quickly summarize the output of function \code{dimada}. The summary includes an overview of the sieve that is used in dimension adaptive estimation and the information
-of selected model for each Lasso-type method and the consequent terms with non-zero coefficients. Moreover, as the selected terms are also used to fit an OLS model, the results of these post selection models are summarized as well.
+of selected model for each Lasso-type method and the consequent terms with non-zero coefficients. Moreover, as the selected terms are also used to fit an OLS model, the results of these post-selection models are summarized as well.
 }
 \examples{
 # summarize the output 'dimada2' in the example of function 'dimada'
 # and save the summary to an object called 'summa'
 set.seed(200)
 df <- data.frame(a=runif(100), b=runif(100), c=runif(100))
+set.seed(200)
 response2 <- sin(2*df[,1])+tan(df[,2])+log(df[,3])+rnorm(100,0.04)
 dimada2 <- dimada(y=response2, x=df, basis="bspline", max.interaction=1,
                   methods=c("Lasso","adaLasso"))

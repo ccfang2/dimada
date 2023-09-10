@@ -18,8 +18,7 @@ dimada(
   parallel = FALSE,
   lambda.min.ratio = 1e-10,
   s = "lambda.min",
-  save.sieve = FALSE,
-  seed = 200
+  save.sieve = FALSE
 )
 }
 \arguments{
@@ -58,8 +57,6 @@ which reduces adaptive Lasso to Lasso. If \code{scale=1}, the weight for higher 
 while the latter selects the largest value of \code{lambda} such that the cross-validated approximation error is within 1 standard error of the minimum. Default is \code{"lambda.min"}.}
 
 \item{save.sieve}{a logical value that indicates if a user hopes to save the data frame of sieves in the output. Default is \code{FALSE}.}
-
-\item{seed}{an integer that controls the randomness of cross validation. With all other arguments remain unchanged, the same seed will lead to the same output. \code{seed=NULL} implies no control over the randomness.}
 }
 \value{
 The \code{dimada} command gives out an object of S3 class \code{"dimada"}, which is a list of results from all methods defined in the argument \code{methods} above. The result generally consists of the following items.
@@ -85,7 +82,7 @@ error across different underlying models. One can implement this estimator easil
 }
 \note{
 The function \code{\link[glmnet]{cv.glmnet}} in package \pkg{glmnet} is applied to conduct Lasso-type methods in \code{dimada}. Cross-validation is demanded because out-of-sample approximation errors are needed to select the best model, as required in the dimension adaptive estimator.
-Moreover, post-selection OLS model is performed because the approximation error in Lasso-type methods also includes a regularization term which is always non-negative. Thus, it would be better to run a post-selection model without a regularization term so that the estimation result can be directly compared with other estimators.
+Moreover, post-selection OLS model is performed to obtain unbiased coefficients because the estimated coefficients from Lasso-type methods are biased due to the penalty term in the loss function. So, the coefficients from post-selection OLS model could be used for prediction.
 }
 \examples{
 # a data frame with 3 independent variables

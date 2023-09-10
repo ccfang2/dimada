@@ -27,8 +27,9 @@ In particular, if a user defines a test dataset which he hopes to use for his ow
 the test dataset with the same number of basis used for each variable of the main dataset.
 }
 \note{
-By definition, trigonometric polynomials are sum of cosine and sine polynomials. Hence, in the construction of \code{trig.gen} command, functions \code{cosine.gen} and \code{sine.gen} are called upon and the resulting sieves from them are then combined
-to get the final sieve for \code{trig.gen}.
+In general, trigonometric polynomials are a sum of cosine polynomials and sine polynomials, so the size of resulting trigonometric sieve is as twice as the size of cosine or sine sieve with the same input arguments, if no interaction between variables is allowed.
+However, if interactions are permitted, the size of trigonometric sieve is much larger due to the fact that it further considers the interactions between the cosine and sine components.
+The function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{trig.gen}.
 }
 \examples{
 # a data frame with 3 variables and 100 observations

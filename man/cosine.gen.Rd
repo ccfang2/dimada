@@ -27,7 +27,7 @@ In particular, if a user defines a test dataset which he hopes to use for his ow
 the test dataset with the same number of basis used for each variable of the main dataset.
 }
 \note{
-An internal function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{cosine.gen}.
+The function \code{create_index_matrix} in package \pkg{Sieve} is applied to help with the generation of multivariate sieves in function \code{cosine.gen}.
 }
 \examples{
 # a data frame with 3 variables and 100 observations
