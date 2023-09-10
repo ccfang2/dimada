@@ -184,7 +184,7 @@ dimada <- function(y,
   if (!is.na(basis) && basis=="bspline") {
     lasso.final.coefs <- ifelse(lasso.final.coefs< stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-15*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE) | lasso.final.coefs> stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+15*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE),0, lasso.final.coefs)
   } else {
-    lasso.final.coefs <- ifelse(lasso.final.coefs< stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-50*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE) | lasso.final.coefs> stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+50*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE),0, lasso.final.coefs)
+    lasso.final.coefs <- ifelse(lasso.final.coefs< stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-100*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE) | lasso.final.coefs> stats::quantile(lasso.final.coefs[lasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+100*stats::IQR(lasso.final.coefs[lasso.final.coefs!=0], na.rm = TRUE),0, lasso.final.coefs)
   }
   lasso.final.coefs.index <- lasso.final.coefs!=0
 
@@ -216,7 +216,7 @@ dimada <- function(y,
     if (!is.na(basis) && basis=="bspline") {
       adaLasso.final.coefs <- ifelse(adaLasso.final.coefs< stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.25,na.rm = TRUE)-15*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE) | adaLasso.final.coefs>stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.75,na.rm = TRUE)+15*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE),0,adaLasso.final.coefs)
     } else {
-      adaLasso.final.coefs <- ifelse(adaLasso.final.coefs< stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.25,na.rm = TRUE)-50*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE) | adaLasso.final.coefs>stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.75,na.rm = TRUE)+50*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE),0,adaLasso.final.coefs)
+      adaLasso.final.coefs <- ifelse(adaLasso.final.coefs< stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.25,na.rm = TRUE)-100*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE) | adaLasso.final.coefs>stats::quantile(adaLasso.final.coefs[adaLasso.final.coefs!=0], prob=0.75,na.rm = TRUE)+100*stats::IQR(adaLasso.final.coefs[adaLasso.final.coefs!=0], na.rm = TRUE),0,adaLasso.final.coefs)
     }
     adaLasso.final.coefs.index <- adaLasso.final.coefs!=0
 
@@ -244,7 +244,7 @@ dimada <- function(y,
       if(!is.na(basis) && basis=="bspline") {
         taLasso.s1.final.coefs <- ifelse(taLasso.s1.final.coefs< stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.25, na.rm = TRUE)-15*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE) | taLasso.s1.final.coefs>stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.75, na.rm = TRUE)+15*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE),0,taLasso.s1.final.coefs)
       } else {
-        taLasso.s1.final.coefs <- ifelse(taLasso.s1.final.coefs< stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.25, na.rm = TRUE)-50*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE) | taLasso.s1.final.coefs>stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.75, na.rm = TRUE)+50*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE),0,taLasso.s1.final.coefs)
+        taLasso.s1.final.coefs <- ifelse(taLasso.s1.final.coefs< stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.25, na.rm = TRUE)-100*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE) | taLasso.s1.final.coefs>stats::quantile(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], prob=0.75, na.rm = TRUE)+100*stats::IQR(taLasso.s1.final.coefs[taLasso.s1.final.coefs!=0], na.rm = TRUE),0,taLasso.s1.final.coefs)
       }
       taLasso.s1.final.coefs.index <- taLasso.s1.final.coefs!=0
 
@@ -266,7 +266,7 @@ dimada <- function(y,
         if (!is.na(basis) && basis=="bspline") {
           taLasso.final.coefs <- ifelse(taLasso.final.coefs< stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-15*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE) | taLasso.final.coefs>stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+15*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE),0,taLasso.final.coefs)
         } else {
-          taLasso.final.coefs <- ifelse(taLasso.final.coefs< stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-50*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE) | taLasso.final.coefs>stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+50*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE),0,taLasso.final.coefs)
+          taLasso.final.coefs <- ifelse(taLasso.final.coefs< stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.25, na.rm = TRUE)-100*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE) | taLasso.final.coefs>stats::quantile(taLasso.final.coefs[taLasso.final.coefs!=0], prob=0.75, na.rm = TRUE)+100*stats::IQR(taLasso.final.coefs[taLasso.final.coefs!=0], na.rm = TRUE),0,taLasso.final.coefs)
         }
         taLasso.final.coefs.index <- taLasso.final.coefs!=0
 
