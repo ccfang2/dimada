@@ -41,7 +41,7 @@ dimada2 <- dimada(y=response2, x=df, basis="bspline", max.interaction=1, methods
 To quickly plot out the main results of `dimada()`, one can use `dimada.plot()`. This command depicts the change of cross-validated approximation errors against lambdas used in Lasso-type methods or the consequent numbers of non zero coefficients. 
 
 ```r
-(plot <- dimada.plot(dimada2,x="nzeros"))
+plot <- dimada.plot(dimada2,x="nzeros")
 ```
 
 The plot is as follows.
@@ -63,7 +63,7 @@ The summary is as follows.
 Basis function: B-Splines
 Number of basis in each term: 5
 Maximum number of interactions in each term: 1
-Time used: 0.2408459 secs
+Time used: 0.2960498 secs
  
 ======================================== 
           LASSO
@@ -72,7 +72,7 @@ Selection rule of lambda: Value of lambda that gives minimum MSE
 Selected lambda: 3.28e-02
 Number of selected terms: 11
 Cross-validated Empirical MSE: 1.22e+00
-Time used: 1.189493 secs
+Time used: 1.135178 secs
  
 Coefficients: 
 | a.bs1   -0.17783| 
@@ -114,7 +114,7 @@ Selection rule of lambda: Value of lambda that gives minimum MSE
 Selected lambda: 7.68e-02
 Number of selected terms: 8
 Cross-validated Empirical MSE: 1.19e+00
-Time used: 1.269758 secs
+Time used: 1.235119 secs
  
 Coefficients: 
 | c.bs1   -4.02574| 
