@@ -63,29 +63,29 @@ The summary is as follows.
 Basis function: B-Splines
 Number of basis in each term: 5
 Maximum number of interactions in each term: 1
-Time used: 0.5402379 secs
+Time used: 0.2408459 secs
  
 ======================================== 
           LASSO
 ======================================== 
 Selection rule of lambda: Value of lambda that gives minimum MSE
-Selected lambda: 2.94e-02
+Selected lambda: 3.28e-02
 Number of selected terms: 11
-Cross-validated Empirical MSE: 1.19e+00
-Time used: 0.1058569 secs
+Cross-validated Empirical MSE: 1.22e+00
+Time used: 1.189493 secs
  
 Coefficients: 
-| a.bs1   -0.17580| 
-| b.bs1   -0.13075| 
-| c.bs1   -3.96154| 
-| b.bs2   -0.89452| 
-| c.bs2   -0.49023| 
-| a.bs3    0.28987| 
-| a.bs4    0.78600| 
-| b.bs4    0.12092| 
-| c.bs4    0.94517| 
-| b.bs5    0.70675| 
-| c.bs5    0.31314| 
+| a.bs1   -0.17783| 
+| b.bs1   -0.12352| 
+| c.bs1   -3.94617| 
+| b.bs2   -0.89202| 
+| c.bs2   -0.48332| 
+| a.bs3    0.27788| 
+| a.bs4    0.77288| 
+| b.bs4    0.11791| 
+| c.bs4    0.94437| 
+| b.bs5    0.69366| 
+| c.bs5    0.30913| 
 
 ======================================== 
           Post LASSO
@@ -111,20 +111,20 @@ Coefficients:
           Adaptive LASSO
 ======================================== 
 Selection rule of lambda: Value of lambda that gives minimum MSE
-Selected lambda: 6.37e-02
+Selected lambda: 7.68e-02
 Number of selected terms: 8
-Cross-validated Empirical MSE: 1.14e+00
-Time used: 0.2062559 secs
+Cross-validated Empirical MSE: 1.19e+00
+Time used: 1.269758 secs
  
 Coefficients: 
-| c.bs1   -4.03370| 
-| b.bs2   -1.09822| 
-| c.bs2   -0.42195| 
-| a.bs3    0.25521| 
-| a.bs4    0.87472| 
-| c.bs4    1.07301| 
-| b.bs5    0.68924| 
-| c.bs5    0.15170| 
+| c.bs1   -4.02574| 
+| b.bs2   -1.10738| 
+| c.bs2   -0.39484| 
+| a.bs3    0.20018| 
+| a.bs4    0.86268| 
+| c.bs4    1.09413| 
+| b.bs5    0.65998| 
+| c.bs5    0.11182| 
 
 ======================================== 
           Post Adaptive LASSO
@@ -144,7 +144,7 @@ Coefficients:
 |` c.bs5`      0.36596| 
 ```
 
-As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.19 and 1.14. However, the coefficients are biased due to the penalty term in loss function. To remove such an impact, post-Lasso and post-adaptive Lasso are performed, and MSEs for these post-selection methods are 0.901 and 0.906. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller in-sample approximation error than parametric OLS estimator, about 2/3 of it. 
+As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.22 and 1.19. However, the coefficients are biased due to the penalty term in loss function. To remove such an impact, post-Lasso and post-adaptive Lasso are performed, and MSEs for these post-selection methods are 0.901 and 0.906. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller in-sample approximation error than parametric OLS estimator, about 2/3 of it. 
 
 However, in practice, it is adviced to split the original dataset into train data and test data, then perform our dimension adaptive estimator in train data and finally use the coefficients from post-selection methods to make predictions in test data. The out-of-sample MSE of our estimator can thus be computed and compared with other estimators.
 
@@ -164,18 +164,19 @@ It is worthy of mentioning that users could also compute sieves for a test datas
 
 ## Log of Change
 
+<details><summary>Version 1.0.2 (Date: 10.9.2023) </summary>
+      <ol>
+            <li> Fix an error in <code>trig.gen()</code> so it considers the interactions between cosine and sine components in trigonometric polynomials.
+            <li> The function <code>create_index_matrix()</code> in package <code>Sieve</code> is now exportable, so I could call the function directly in my package.
+            <li> In <code>dimada()</code>, outliers in the estimated coefficients from Lasso-type methods are excluded in post-selection methods.
+            <li> In <code>dimada()</code>, the argument <code>seed</code> is removed.
+      </ol>
+</details>
+
 <details><summary>Version 1.0.1 (Date: 30.8.2023) </summary>
       <ol>
             <li> Fix an error in the output of <code>trig.gen()</code>: the output now contains the data frames of sieves for both train and test datasets if original test dataset is given.
             <li> Add an argument <code>save.sieve</code> in the function <code>dimada()</code> so that one can choose if he hopes to save the data frame of generated or given sieves in the output of <code>dimada()</code>. The sieves can sometimes be very large in size, so if a user won't use it in future, it is advised not to save it in the output which may take up your machine memory.
-      </ol>
-</details>
-
-<details><summary>Version 1.0.2 (Date: 9.9.2023) </summary>
-      <ol>
-            <li> Fix an error in <code>trig.gen()</code> so it considers the interactions between cosine and sine components in trigonometric polynomials.
-            <li> The function <code>create_index_matrix()</code> in package <code>Sieve</code> is now exportable, so I could call the function directly in my package.
-            <li> Outliers in the estimated coefficients from Lasso-type methods are excluded in post-selection methods.
       </ol>
 </details>
 
