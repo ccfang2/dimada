@@ -88,7 +88,7 @@ haar.gen <- function(data,
   }
 
   # compute the lower bound of smoothness for haar wavelets
-  smoothness <- (ncol(data)+1)/2
+  smoothness <- (3*ncol(data)-1)/2
   if (is.null(n.basis)) n.basis <- base::floor(log(nrow(data), base=10)*nrow(data)^(1/(2*smoothness+1)))
 
   # rescale the columns of matrix to [0,1]
