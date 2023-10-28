@@ -48,7 +48,7 @@ The plot is as follows.
 
 <img src="man/figures/plot.png" alt="Plot" width="600"/>    
 
-In particular, post-selection OLS model is performed after each Lasso-type method to obtain unbiased coefficients because the estimated coefficients from Lasso-type methods are biased due to the penalty term in the loss function. Then, the coefficients from post-selection OLS model could be used for prediction in new dataset. The results of Lasso-type methods and the post-selection OLS models can be quickly printed out with the command `dimada.summary()`.
+In particular, it is a common practice to run post-selection OLS (for a linear model) on all selected variables from Lasso-type method. Then, the coefficients from post-selection OLS model could be used for prediction in new dataset. The results of Lasso-type methods and the post-selection OLS models can be quickly printed out with the command `dimada.summary()`.
 
 ```r
 dimada.summary(dimada2,verbose=TRUE)
@@ -144,7 +144,7 @@ Coefficients:
 |` c.bs5`      0.36596| 
 ```
 
-As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.22 and 1.19. However, the coefficients are biased due to the penalty term in loss function. To remove such an impact, post-Lasso and post-adaptive Lasso are performed, and MSEs for these post-selection methods are 0.901 and 0.906. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller in-sample approximation error than parametric OLS estimator, about 2/3 of it. 
+As is seen, the cross-validated (i.e., out-of-sample) MSEs for Lasso and adaptive Lasso are 1.22 and 1.19. The post-Lasso and post-adaptive Lasso methods are performed, and MSEs for these post-selection methods are 0.901 and 0.906. Let's compare them to the MSE using parametric OLS estimator. The MSE from OLS `lm(response2~df[,1]+df[,2]+df[,3])` is 1.257. Hence, it is noted that in this non-parametric additive underlying model, our dimension adaptive estimator achieves a much smaller in-sample approximation error than parametric OLS estimator, about 2/3 of it. 
 
 However, in practice, it is adviced to split the original dataset into train data and test data, then perform our dimension adaptive estimator in train data and finally use the coefficients from post-selection methods to make predictions in test data. The out-of-sample MSE of our estimator can thus be computed and compared with other estimators.
 
